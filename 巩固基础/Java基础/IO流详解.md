@@ -193,8 +193,114 @@
 
 ## IO 
 
+**IO流：**来操作文件本身内容的操作，由程序来进行文件内容的读写。
 
+### IO流的分类
 
+- 按照流的方向分：输入流--输出流
+- 按照操作文件类型分：字节流--字符流（纯文本文件）
+
+**纯文本文件：Windows自带的记事本能够打开，并且能够读懂的文件。**
+
+### IO流的常见使用
+
+- 字节输入流（从文件->程序）：inputStream（抽象类）
+
+  - 文件字节输入流：FileInputSteam
+
+    **细节：**
+
+    1. 如果文件不存在直接抛出异常
+
+    2. 读取到文件的末尾并且读取不到数据了，那么read()方法的返回值为-1
+
+    3. 循环读取（必须使用中间变量来接收读取的数据，如果直接使用read，在代码中出现一次就会移动一次读取的光标，这样会造成数据的丢失）
+
+       ```java
+               int b;
+               while ((b = fis.read()) != -1){
+                   System.out.print((char) b);
+               }
+       ```
+
+    4. read(byte[] buffer)，当前方法的返回值是读取了多少个字节，并且会将读取到的内容放入传递的数组中。但是在多次读取中，将读取到的数据装入数组中时并不会将原本数组中的内容清空，而是从头开始逐次进行覆盖。
+
+- 字节输出流（从程序->文件）：outputStream（抽象类）
+
+  - 文件字节输出流：FileOutputStream
+
+    **细节：**
+
+    1. 创建输出流通道的时候，指定的参数可以是字符串也可以是文件File对象
+
+       ```java
+           //传输的参数是字符串时：
+       	public FileOutputStream(String name, boolean append)
+               throws FileNotFoundException
+           {
+               this(name != null ? new File(name) : null, append);
+           }
+       	//传输的参数是文件（并且传输的参数是字符串时，底层调用的也是该方法）
+           public FileOutputStream(File file, boolean append)
+               throws FileNotFoundException
+       ```
+
+    2. 在File对象指定的路径中，文件本身可以不存在，但是文件的父级路径必须存在，不然就会报错。
+
+    3. 如果文件本身存在，那么如果在创建流的通道之后，但是不进行输出就直接关闭了通道，那么文件本身的内容也会被清空。（建议：在创建通道的时候，添加能够续写的参数）
+
+    4. 如果在写入内容的时候需要进行换行写，那么在输出中写入一个换行符即可。Windows：/r/n ；liunx：/n ；mac：/r也可以使用一个方法
+
+    ```java
+    FileOutputStream fos = new FileOutputStream("D:\\workpace\\文件字节输出流.txt",true);//不会清空原有的内容
+    
+    fos.write(bytes, 0, bytes.length);//参数一：字节数组，参数二：开始位置（索引），参数三：写入字节的个数
+    
+    //文件字节输出流
+            
+            //1.获取字节输出流对象，并指定需要操作的文件的路径
+            //FileOutputStream fos = new FileOutputStream("D:\\workpace\\文件字节输出流.txt");//当前文件路径不存在，指当前文件(文件字节输入流.txt)不存在
+            //FileOutputStream fos = new FileOutputStream("D:\\workpace\\文件字节输出流.txt");//当前电脑不存在E盘
+            FileOutputStream fos = new FileOutputStream("D:\\workpaceTest\\文件字节输出流.txt");//当前电脑不存在这个文件夹和文件
+            //  思考：如果指定的路径没有这个文件会发生什么？
+            //  结论：如果父级路径准确，那么就会创建一个这样的文件，并且会将需要写入的内容写入到文件中
+            //  思考：如果没有指定的父级路径会发生什么？
+            //  结论：如果父级路径不正确，那么就会抛出异常（E:\workpace\文件字节输出流.txt (系统找不到指定的路径。)
+            //  思考：如果指定的盘符存在，但是在文件前的文件夹不存在，会发生什么？
+            //  结论：会抛出异常，并不会创建会存储该文件的文件夹（D:\workpaceTest\文件字节输出流.txt (系统找不到指定的路径。)）
+            String str = "hello world";
+            byte[] bytes = str.getBytes(StandardCharsets.UTF_8);//尽量在进行转化的时候使用需要指定编码格式的方法，否则有可能出现乱码
+            //2.写出数据
+            fos.write(bytes);
+            //3.释放资源
+            fos.close();
+    ```
+
+  **文件拷贝**
+
+  ```java
+  // 文件拷贝
+  FileInputStream fis = null;
+  FileOutputStream fos = null;
   
-
-
+  try {
+      fis = new FileInputStream("D:\\workpace\\文件字节输入流.txt");
+      fos = new FileOutputStream("D:\\workpace\\文件字节输出流.txt");
+  
+      byte[] bytes = new byte[1024 * 1024 * 5];
+      
+      int len;
+      while ((len = fis.read(bytes)) != -1) {
+          fos.write(bytes, 0, len);
+      }
+  } catch (Exception e) {
+      e.printStackTrace();
+  } finally {
+      try {
+          fis.close();
+          fos.close();
+      } catch (Exception e) {
+          e.printStackTrace();
+      }
+  }
+  ```
