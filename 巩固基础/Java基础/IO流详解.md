@@ -297,10 +297,105 @@
       e.printStackTrace();
   } finally {
       try {
-          fis.close();
-          fos.close();
+  
+          if (fis != null) fis.close();
+      } catch (Exception e) {
+          e.printStackTrace();
+      }
+      try {
+          if (fos != null) fos.close();
       } catch (Exception e) {
           e.printStackTrace();
       }
   }
   ```
+  
+  ```Java
+  private static void start2() throws FileNotFoundException {
+      // 文件拷贝
+      FileInputStream fis = new FileInputStream("D:\\workpace\\文件字节输入流.txt");
+      FileOutputStream fos = new FileOutputStream("D:\\workpace\\文件字节输出流.txt");
+      try (fis; fos) {
+          byte[] bytes = new byte[1024 * 1024 * 5];
+          int len;
+          while ((len = fis.read(bytes)) != -1) {
+              fos.write(bytes, 0, len);
+          }
+      } catch (Exception e) {
+          // Do nothing
+      }
+  }
+  ```
+  
+  编码：
+  
+  ```Java
+  //编码
+  String str1 = "床前明月光";
+  //按照默认的字符集进行编码
+  byte[] bytes1 = str1.getBytes();
+  //按照指定的字符集进行编码
+  str1.getBytes(StandardCharsets.UTF_8);
+  ```
+  
+  解码：
+  
+  ```Java
+  //解码
+  //按照默认的字符集进行解码
+  String str2 = new String(bytes1);
+  //按照指定的字符集进行解码
+  String str3 = new String(bytes1, StandardCharsets.UTF_8);
+  ```
+  
+- 字符输入流（Reader抽象类）
+
+  - FileReader-文件字符输入流
+
+    细节：
+
+    1. 空参的read()方法，底层其实还是字节流，依旧是一个字节一个字节的读取，但是当遇到中文的时候就会一次读多个字节。在读取完之后会将字节转换为十进制进行返还。
+    2. 读到文件末尾了，read（）方法的返回值为-1
+    3. 有参的read(char[])方法，当读取之后在将读取到的字节转换为十进制后还会强转为字符并放置到传入的字节数组中。
+
+    ```Java
+    //字符输入流
+    FileReader fr = new FileReader("文件字符输入流.txt");
+    
+    //方式一：无参的read方法
+    int b;
+    while ((b = fr.read()) != -1) {
+        System.out.print((char) b);
+    }
+    
+    //方式二：有参的read方法
+    char[] chars = new char[1024];
+    int len;
+    while ((len = fr.read(chars)) != -1) {
+        System.out.print(new String(chars, 0, len));
+    }
+    fr.close();
+    ```
+
+  - FileWriter--文件字符输出流
+
+    细节：
+
+    1. writer(int) 写入到文件中的是该整数在字符集上对应的字符。就是会将参数根据字符集进行编码，再将编码的内容写入到字符集中。
+
+    ```Java
+    //字符输出流
+    FileWriter fw = new FileWriter("文件字符输出流.txt");
+    fw.write("你好,字符输出流");
+    fw.close();
+    //fw.write(String);
+    //fw.write(int);
+    //fw.write(char[]);
+    //fw.write(char[],off,len);
+    //fw.write(String, off, len);
+    ```
+
+    
+
+
+
