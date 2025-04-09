@@ -219,6 +219,153 @@ init 6
     grep hello *.java     查找当前目录中所有.java结尾文件中包含hello字符串的位置
     ```
 
+### 系统管理
+
+- top 实时监控系统资源
+
+  ```bash
+  top
+  ```
+
+- ps 查看进程状态
+
+  ```bash
+  ps
+  ```
+
+- kill 终止进程 kill -9 强制终止进程
+
+  ```bash
+  kill 1234 / kill -9 1234
+  ```
+
+- df/du 查看磁盘空间
+
+  ```bash
+  df -h #磁盘使用情况
+  du -sh nginx-1.20.2/ #查看目录大小
+  ```
+
+- free 查看内存使用
+
+  ```bash
+  free -h
+  ```
+
+- uname 显示系统信息
+
+  ```bash
+  uname -a
+  ```
+
+- shutdown/reboot 关机/重启
+
+  ```bash
+  shutdown -h now #立即关机
+  ```
+
+### 权限管理
+
+- chmod 修改文件权限
+
+  ```bash
+  chmod 755 script.sh
+  ```
+
+- chown/chgrp 修改文件所有者/所属组
+
+  ```bash
+  chown root /u         将 /u 的属主更改为"root"。
+  chown root:staff /u   和上面类似，但同时也将其属组更改为"staff"。
+  chown -hR root /u     将 /u 及其子目录下所有文件的属主更为"root"。
+  chgrp staff /u        将 /u 的属组更改为"staff"。
+  chgrp -hR staff /u    将 /u 及其子目录下所有文件的属组为"staff"。
+  ```
+
+### 用户与组
+
+- useradd/userdel 添加用户/删除用户
+
+  ```bash
+  useradd -m home #创建用户以及主目录
+  userdel -r home #删除用户以及主目录和邮件池
+  ```
+
+- passwd 修改用户密码
+
+  ```bash
+  passwd 用户
+  ```
+
+- su/sudo 切换用户/管理员权限执行
+
+### 网络相关
+
+- ping 测试网络连通性
+
+- curl/wget 下载文件或测试http请求
+
+  ```bash
+  curl -0 http://example.com/file.zip
+  ```
+
+- ssh 远程登录服务器
+
+  ```bash
+  ssh user@192.168.1.100
+  ```
+
+- netstat/ss 查看网络连接状态
+
+  ```bash
+  ss -tuln
+  ```
+
+- ip/ipconfig 配置/查看网络接口
+
+### 软件包管理
+
+- APT(Debian/Ubuntu)
+
+  ```bash
+  apt update         # 更新软件源
+  apt install nginx  # 安装软件
+  apt remove nginx   # 卸载软件
+  ```
+
+- YUM/DNF(RedHat/CentOs)
+
+  ```bash
+  dnf install nginx
+  ```
+
+- systemctl 管理系统服务
+
+  ```bash
+  systemctl start nginx    # 启动服务
+  systemctl enable nginx   # 开机自启
+  ```
+
+### 其他
+
+- history 查看历史命令
+
+  ```bash
+  history | grep ssh
+  ```
+
+- man 查看命令手册
+
+  ```bash
+  man ls
+  ```
+
+- alias 创建命令别名
+
+  ```bash
+  alias ll="ls -alh"
+  ```
+
 ## Linux软件安装
 
 **安装方式:**
@@ -304,8 +451,11 @@ init 6
 
    ```bash
    groupadd mysql
-   useradd -r -g mysql -s /bin/false mysql
-   mysqlld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
+   useradd -r -g mysql \
+   -s /bin/false mysql \
+   mysqlld --initialize --user=mysql \
+   --basedir=/usr/local/mysql \
+   --datadir=/usr/local/mysql/data
    
    初始化完毕之后，日志会输出mysql的root用户的临时密码，记得复制
    ```
@@ -326,7 +476,7 @@ init 6
    FLUSH PRIVILEGES;
    ```
 
-9. 防火墙操作
+9. **防火墙操作**
 
    1. 查看防火墙状态
 
@@ -358,7 +508,7 @@ init 6
       systemctl enable firewalld
       ```
 
-   6. 开放指定端口
+   6. **开放指定端口**
 
       ```bash
       firewall-cmd --zone=public --add-port=8080/tcp --permanent
@@ -468,29 +618,21 @@ kill 进程ID
 kill -9 进程ID
 ```
 
-
-
-
-
-
-
-
-
 ## Linux目录特点
 
 - / 是所有目录的顶点
-  - bin 	存放二进制可执行文件
-  - boot   存放系统引导时使用的各种文件
-  - dev     存放设备文件
-  - **etc      存放系统配置文件**
-  - home 存放系统用户的文件
-  - lib       存放程序运行所需的共享库和内核模块
-  - opt      额外按照的可选应用程序包所放置的位置
-  - **root    超级用户目录**
-  - sbin    存放二进制可执行文件，只有root用户才能访问
-  - tmp     存放临时文件
-  - **usr       存放系统应用程序**
-  - var        存放运行时需要改变数据的文件，例如日志文件
+  - bin 	  存放二进制可执行文件
+  - boot     存放系统引导时使用的各种文件
+  - dev       存放设备文件
+  - **etc       存放系统配置文件**
+  - home   存放系统用户的文件
+  - lib         存放程序运行所需的共享库和内核模块
+  - opt        额外按照的可选应用程序包所放置的位置
+  - **root      超级用户目录**
+  - sbin       存放二进制可执行文件，只有root用户才能访问
+  - tmp       存放临时文件
+  - **usr        存放系统应用程序**
+  - var         存放运行时需要改变数据的文件，例如日志文件
 
 **/usr 和 usr在 Linux中只有区别的，如果有/ 那么表示的是在根目录下去寻找后面的目录 是绝对路径；如果没有 / 那么表示在当前目录下寻找 是相对路径。**
 
